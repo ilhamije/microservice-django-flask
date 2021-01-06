@@ -1,41 +1,26 @@
 from django.test import TestCase
 from .models import Product
+from .serializers import ProductSerializer
 from rest_framework.test import APIClient
 from rest_framework import status
 from django.urls import reverse
 
 
-class ProductTestCase(TestCase):
+# initialize the APIClient App
+client = APIClient()
+
+
+class GetAllProductsTest(TestCase):
     def setUp(self):
-        p = Product.objects.create(title="title test", image="image test")
-        self.test_product_id = p.pk
+        Product.objects.create(title="title test 1", image="image test 1")
+        Product.objects.create(title="title test 2", image="image test 2")
+        Product.objects.create(title="title test 3", image="image test 3")
 
-    def test_get_product(self):
-        title = Product.objects.get(title="title test")
-        self.assertEquals(title.image, 'image test')
-
-    def test_get_one_product(self):
-        product = Product.objects.get(pk=self.test_product_id)
-        self.assertEquals(product.image, 'image test')
-
-    # def test_update_one_product(self):
-    #     product = Product.objects.get(pk=self.test_product_id)
-    #     updated_product = Product.objects.update(image='image updated')
-    #     self.assertEquals(updated_product.image, 'image updated')
+    def test_get_all_products(self):
+        response = client.get(reverse('products-list-create'))
+        products = Product.objects.all()
+        serializer = ProductSerializer(products, many=True)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
-class ViewTestCase(TestCase):
-    def setUp(self):
-        self.client = APIClient()
-        self.productlist_data = {
-            'title':'product api test',
-            'image':'imagine the future'
-            }
-        self.response = self.client.post(
-            reverse('products-list-create'),
-            self.productlist_data,
-            format='json'
-        )
-
-    def test_api_create_product(self):
-        self.assertEqual(self.response.status_code, status.HTTP_201_CREATED)

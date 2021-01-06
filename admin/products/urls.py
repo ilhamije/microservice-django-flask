@@ -11,5 +11,5 @@ urlpatterns = [
         'get':'retrieve',
         'put':'update',
         'delete':'destroy',
-    }), name='product-get-put-delete')
+    }), name='products-detail')
 ]
