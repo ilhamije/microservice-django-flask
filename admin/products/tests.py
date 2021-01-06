@@ -107,3 +107,21 @@ class UpdateSinglePuppyTest(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class DeleteSinglePuppyTest(TestCase):
+    """ Test module for deleting an existing product record """
+
+    def setUp(self):
+        self.yugurt = Product.objects.create(title="yugurt", image="image item 2")
+        self.coffee = Product.objects.create(title="coffee", image="image item 3")
+
+    def test_valid_delete_product(self):
+        response = client.delete(
+            reverse('products-detail', kwargs={'pk':self.coffee.pk}))
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+
+    def test_invalid_delete_product(self):
+        response = client.delete(
+            reverse('products-detail', kwargs={'pk':91}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
