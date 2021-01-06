@@ -75,3 +75,35 @@ class CreateNewProductTest(TestCase):
             content_type='application/json'
         )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+
+class UpdateSinglePuppyTest(TestCase):
+    """ Test module for updating an existing product record """
+
+    def setUp(self):
+        self.yugurt = Product.objects.create(title="yugurt", image="image item 2")
+        self.coffee = Product.objects.create(title="coffee", image="image item 3")
+        self.valid_payload = {
+            'title': 'Karbol',
+            'image': 'Paid karbol'
+        }
+        self.invalid_payload = {
+            'title': '',
+            'image': 'Paid karbol'
+        }
+
+    def test_valid_update_product(self):
+        response = client.put(
+            reverse('products-detail', kwargs={'pk':self.coffee.pk}),
+            data=json.dumps(self.valid_payload),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
+
+    def test_invalid_update_product(self):
+        response = client.put(
+            reverse('products-detail', kwargs={'pk':self.coffee.pk}),
+            data=json.dumps(self.invalid_payload),
+            content_type='application/json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
