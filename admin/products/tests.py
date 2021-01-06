@@ -12,9 +12,9 @@ client = APIClient()
 
 class GetAllProductsTest(TestCase):
     def setUp(self):
-        Product.objects.create(title="title test 1", image="image test 1")
-        Product.objects.create(title="title test 2", image="image test 2")
-        Product.objects.create(title="title test 3", image="image test 3")
+        Product.objects.create(title="snack 1", image="image item 1")
+        Product.objects.create(title="yugurt 2", image="image item 2")
+        Product.objects.create(title="coffee 3", image="image item 3")
 
     def test_get_all_products(self):
         response = client.get(reverse('products-list-create'))
@@ -24,3 +24,19 @@ class GetAllProductsTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 
+class GetSingleProductTest(TestCase):
+    def setUp(self):
+        self.snack = Product.objects.create(title="snack", image="image item 1")
+        self.yugurt = Product.objects.create(title="yugurt", image="image item 2")
+        self.coffee = Product.objects.create(title="coffee", image="image item 3")
+
+    def test_get_valid_single_product(self):
+        response = client.get(reverse('products-detail', kwargs={'pk':self.snack.pk}))
+        product = Product.objects.get(pk=self.snack.pk)
+        serializer = ProductSerializer(product)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_get_invalid_single_product(self):
+        response = client.get(reverse('products-detail', kwargs={'pk':91}))
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)

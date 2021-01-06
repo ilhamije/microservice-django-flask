@@ -1,5 +1,6 @@
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 from .models import Product
 from .serializers import ProductSerializer
@@ -18,7 +19,8 @@ class ProductViewSet(viewsets.ViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def retrieve(self, request, pk=None):
-        product = Product.objects.get(id=pk)
+        # product = Product.objects.get(id=pk)
+        product = get_object_or_404(Product, id=pk)
         serializer = ProductSerializer(product)
         return Response(serializer.data)
 
